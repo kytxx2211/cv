@@ -1,52 +1,345 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-
 <meta charset="UTF-8">
-<title>CATNAP STUDIO CMS</title>
+<title>CATNAP STUDIO PRO</title>
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
-<!-- CSS -->
-<link rel="stylesheet" href="style.css">
+<!-- Font -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 
+<style>
+
+/* ===== GLOBAL ===== */
+
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:Orbitron;
+background:#050510;
+color:white;
+overflow-x:hidden;
+}
+
+/* ===== INTRO ===== */
+
+#intro{
+position:fixed;
+inset:0;
+background:black;
+z-index:9999;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+}
+
+#intro video{
+width:70%;
+max-width:600px;
+border:2px solid #00f2ff;
+box-shadow:0 0 30px #00f2ff;
+}
+
+/* ===== LOGIN ===== */
+
+#login{
+position:fixed;
+inset:0;
+background:#050510;
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:9000;
+}
+
+#login-box{
+background:#111;
+padding:40px;
+border-radius:15px;
+box-shadow:0 0 20px #00f2ff55;
+width:300px;
+text-align:center;
+}
+
+/* ===== DASHBOARD ===== */
+
+header{
+padding:25px;
+text-align:center;
+border-bottom:2px solid #00f2ff;
+box-shadow:0 0 20px #00f2ff55;
+}
+
+.panel{
+max-width:900px;
+margin:auto;
+padding:30px;
+}
+
+/* ===== FORM ===== */
+
+input,select{
+width:100%;
+padding:12px;
+margin:8px 0;
+background:#111;
+border:1px solid #8a2eff;
+color:white;
+border-radius:8px;
+}
+
+button{
+width:100%;
+padding:12px;
+border:none;
+border-radius:20px;
+background:linear-gradient(135deg,#00f2ff,#8a2eff);
+font-weight:bold;
+cursor:pointer;
+margin-top:10px;
+}
+
+/* ===== CARD ===== */
+
+#list{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+gap:20px;
+margin-top:30px;
+}
+
+.item{
+background:rgba(20,20,30,.7);
+padding:20px;
+border-radius:15px;
+border:1px solid #8a2eff55;
+box-shadow:0 0 15px #8a2eff33;
+}
+
+.del{
+background:red;
+margin-top:10px;
+}
+
+/* ===== MOBILE ===== */
+
+@media(max-width:768px){
+ header{font-size:14px}
+}
+
+</style>
 </head>
 
 <body>
 
-<header>
-<h1>🚀 CATNAP STUDIO CMS</h1>
-</header>
-<!-- LOADING -->
-<div id="loader">
-  <div class="spinner"></div>
-  <p>Loading CATNAP...</p>
+<!-- INTRO -->
+<div id="intro">
+<video autoplay muted id="introVideo">
+<source src="intro.mp4" type="video/mp4">
+</video>
+<p>Loading CATNAP...</p>
 </div>
 
+<!-- LOGIN -->
+<div id="login">
+<div id="login-box">
+
+<h2>ADMIN LOGIN</h2>
+
+<input id="email" placeholder="Email">
+<input id="pass" type="password" placeholder="Password">
+
+<button onclick="login()">LOGIN</button>
+
+</div>
+</div>
+
+<!-- BGM -->
+<audio id="bgm" loop>
+<source src="bgm.mp3" type="audio/mpeg">
+</audio>
+
+
+<header>
+<h1>⚡ CATNAP STUDIO PRO</h1>
+<button onclick="logout()">LOGOUT</button>
+<button onclick="exportPDF()">EXPORT RESUME</button>
+</header>
+
+
 <div class="panel">
+
+<h2>Add Project</h2>
 
 <input id="title" placeholder="Project Title">
 
 <select id="type">
-  <option value="video">Video</option>
-  <option value="design">Design</option>
-  <option value="game">Game</option>
-  <option value="content">Content</option>
+<option>video</option>
+<option>design</option>
+<option>game</option>
+<option>content</option>
 </select>
 
 <button onclick="addWork()">ADD</button>
 
-<h3>📂 Projects</h3>
+<h2>Projects</h2>
 <div id="list"></div>
 
 </div>
 
 
-<!-- JS -->
-<script src="script.js"></script>
+<script>
+
+/* ===== FIREBASE ===== */
+
+const firebaseConfig = {
+ apiKey: "AIzaSyCP5VCUyWDnSqvcgMKJuI5oIJDVX32JqE",
+ authDomain: "catnapstudio-b3052.firebaseapp.com",
+ projectId: "catnapstudio-b3052",
+ storageBucket: "catnapstudio-b3052.appspot.com",
+ messagingSenderId: "957397782595",
+ appId: "1:957397782595:web:9a3744fc5a3955e62704f6"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+const auth = firebase.auth();
+const ref = db.collection("works");
+
+
+/* ===== INTRO + BGM ===== */
+
+const intro=document.getElementById("intro");
+const video=document.getElementById("introVideo");
+const bgm=document.getElementById("bgm");
+
+video.onended=()=>{
+ intro.style.display="none";
+ bgm.play();
+};
+
+
+/* ===== AUTH ===== */
+
+auth.onAuthStateChanged(user=>{
+
+ if(user){
+  document.getElementById("login").style.display="none";
+  load();
+ }else{
+  document.getElementById("login").style.display="flex";
+ }
+
+});
+
+
+function login(){
+
+ const email=document.getElementById("email").value;
+ const pass=document.getElementById("pass").value;
+
+ auth.signInWithEmailAndPassword(email,pass)
+ .catch(e=>alert(e.message));
+
+}
+
+function logout(){
+ auth.signOut();
+}
+
+
+/* ===== CRUD ===== */
+
+function load(){
+
+ ref.orderBy("time","desc")
+ .onSnapshot(snap=>{
+
+  const list=document.getElementById("list");
+  list.innerHTML="";
+
+  snap.forEach(doc=>{
+
+   const d=doc.data();
+
+   const div=document.createElement("div");
+   div.className="item";
+
+   div.innerHTML=`
+    <b>${d.title}</b><br>
+    ${d.type}
+    <button class="del" onclick="del('${doc.id}')">
+    Delete
+    </button>
+   `;
+
+   list.appendChild(div);
+
+  });
+
+ });
+
+}
+
+
+function addWork(){
+
+ const title=title.value;
+ const type=type.value;
+
+ if(!title)return alert("Enter title");
+
+ ref.add({
+  title:title,
+  type:type,
+  time:new Date()
+ });
+
+ document.getElementById("title").value="";
+
+}
+
+
+function del(id){
+
+ if(confirm("Delete?")){
+  ref.doc(id).delete();
+ }
+
+}
+
+
+/* ===== EXPORT RESUME ===== */
+
+function exportPDF(){
+
+ let text="CATNAP STUDIO RESUME\n\n";
+
+ ref.get().then(snap=>{
+
+  snap.forEach(d=>{
+   let x=d.data();
+   text+=x.title+" ("+x.type+")\n";
+  });
+
+  let blob=new Blob([text]);
+  let a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="resume.txt";
+  a.click();
+
+ });
+
+}
+
+</script>
 
 </body>
 </html>
