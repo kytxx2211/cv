@@ -1,30 +1,76 @@
-<script type="module">
+/* ================= FIREBASE ================= */
 
-import { db } from './firebase.js';
+const firebaseConfig = {
+  apiKey: "AIzaSyCP5VCUyWDnSqvcgMKJuI5oIJDVX32JqE",
+  authDomain: "catnapstudio-b3052.firebaseapp.com",
+  projectId: "catnapstudio-b3052",
+  storageBucket: "catnapstudio-b3052.appspot.com",
+  messagingSenderId: "957397782595",
+  appId: "1:957397782595:web:9a3744fc5a3955e62704f6"
+};
 
-import {
- collection,getDocs
-} from
-'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+firebase.initializeApp(firebaseConfig);
 
-async function load(){
+const db = firebase.firestore();
+const worksRef = db.collection("works");
 
- const snap=await getDocs(collection(db,'catnapstudio'));
 
- snap.forEach(d=>{
+/* ================= LOAD REALTIME ================= */
 
-  const data=d.data();
+worksRef.orderBy("time","desc")
+.onSnapshot(snapshot=>{
 
-  const img=document.createElement('img');
-  img.src=data.image;
+  const list = document.getElementById("list");
+  list.innerHTML = "";
 
-  document
-   .getElementById(data.category)
-   .appendChild(img);
+  snapshot.forEach(doc=>{
 
- });
+    const d = doc.data();
+
+    const div = document.createElement("div");
+    div.className = "item";
+
+    div.innerHTML = `
+      <span>${d.title} (${d.type})</span>
+      <button class="del" onclick="deleteWork('${doc.id}')">X</button>
+    `;
+
+    list.appendChild(div);
+
+  });
+
+});
+
+
+/* ================= ADD ================= */
+
+function addWork(){
+
+  const title = document.getElementById("title").value;
+  const type = document.getElementById("type").value;
+
+  if(!title){
+    alert("กรุณาใส่ชื่อผลงาน");
+    return;
+  }
+
+  worksRef.add({
+    title:title,
+    type:type,
+    time:new Date()
+  });
+
+  document.getElementById("title").value = "";
 
 }
 
-load();
-</script>
+
+/* ================= DELETE ================= */
+
+function deleteWork(id){
+
+  if(confirm("ลบผลงานนี้ใช่ไหม?")){
+    worksRef.doc(id).delete();
+  }
+
+}
