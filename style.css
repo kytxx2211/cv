@@ -1,0 +1,67 @@
+body{
+  margin:0;
+  font-family:Segoe UI, sans-serif;
+  background:#050510;
+  color:white;
+}
+
+/* Header */
+header{
+  padding:25px;
+  background:linear-gradient(135deg,#00f2ff22,#8a2eff22);
+  border-bottom:2px solid #00f2ff;
+}
+
+header h1{
+  margin:0;
+  color:#00f2ff;
+}
+
+/* Panel */
+.panel{
+  padding:30px;
+}
+
+/* Form */
+input,select{
+  padding:10px;
+  width:220px;
+  background:#111;
+  border:1px solid #00f2ff;
+  color:white;
+  border-radius:5px;
+  margin:5px;
+}
+
+button{
+  background:linear-gradient(135deg,#00f2ff,#8a2eff);
+  border:none;
+  padding:10px 20px;
+  border-radius:20px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+button:hover{
+  opacity:.8;
+}
+
+/* List */
+.item{
+  background:#111;
+  padding:12px;
+  margin:8px 0;
+  border-radius:8px;
+  display:flex;
+  justify-content:space-between;
+  box-shadow:0 0 6px #8a2eff55;
+}
+
+.del{
+  background:red;
+  color:white;
+  border:none;
+  padding:4px 12px;
+  border-radius:12px;
+  cursor:pointer;
+}
