@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CATNAP STUDIO</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="hero">
+  <h1>CATNAP STUDIO</h1>
+  <p>Gaming & Design</p>
+</header>
+
+<nav>
+  <a href="#video">Video</a>
+  <a href="#design">Design</a>
+  <a href="#game">Game</a>
+  <a href="#content">Content</a>
+</nav>
+
+<section id="video" class="gallery"></section>
+<section id="design" class="gallery"></section>
+<section id="game" class="gallery"></section>
+<section id="content" class="gallery"></section>
+
+<script src="script.js"></script>
+</body>
+</html>
+body{
+ background:#05050a;
+ color:white;
+ font-family:Arial;
+ margin:0;
+}
+
+.hero{
+ height:60vh;
+ display:flex;
+ flex-direction:column;
+ justify-content:center;
+ align-items:center;
+ background:#111;
+}
+
+nav{
+ display:flex;
+ justify-content:center;
+ gap:20px;
+ background:#000;
+ padding:10px;
+}
+
+nav a{color:#0ff;text-decoration:none}
+
+.gallery{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,200px);
+ gap:15px;
+ padding:30px;
+ justify-content:center;
+}
+
+.gallery img{
+ width:100%;
+ border:2px solid #333;
+}
+const data = {
+ video: ['v1.jpg','v2.jpg'],
+ design: ['d1.jpg','d2.jpg'],
+ game: ['g1.jpg','g2.jpg'],
+ content: ['c1.jpg']
+};
+
+for(let cat in data){
+ const sec=document.getElementById(cat);
+
+ data[cat].forEach(img=>{
+  const el=document.createElement('img');
+  el.src='images/'+img;
+  sec.appendChild(el);
+ });
+}
+const data = {
+ video: ['v1.jpg','v2.jpg'],
+ design: ['d1.jpg','d2.jpg'],
+ game: ['g1.jpg','g2.jpg'],
+ content: ['c1.jpg']
+};
+
+for(let cat in data){
+ const sec=document.getElementById(cat);
+
+ data[cat].forEach(img=>{
+  const el=document.createElement('img');
+  el.src='images/'+img;
+  sec.appendChild(el);
+ });
+}
