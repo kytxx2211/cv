@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CATNAP STUDIO</title>
+</head>
+
+<body>
+
+<!-- เนื้อหาเว็บ -->
+<h1>Dashboard</h1>
+
+<div id="list"></div>
+
+<input id="title" placeholder="Title">
+<select id="type">
+  <option value="video">Video</option>
+  <option value="design">Design</option>
+</select>
+
+<button onclick="addWork()">ADD</button>
+
+
+<!-- ================= FIREBASE START ================= -->
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyCP5VCUyWDnSqvcgMKJuI5oIJDVX32JqE",
+  authDomain: "catnapstudio-b3052.firebaseapp.com",
+  projectId: "catnapstudio-b3052",
+  storageBucket: "catnapstudio-b3052.appspot.com",
+  messagingSenderId: "957397782595",
+  appId: "1:957397782595:web:9a3744fc5a3955e62704f6"
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+const worksRef = db.collection("works");
+
+
+worksRef.onSnapshot(snap=>{
+
+  const list=document.getElementById("list");
+  list.innerHTML="";
+
+  snap.forEach(doc=>{
+
+    const data=doc.data();
+
+    const div=document.createElement("div");
+    div.innerText = data.title+" ("+data.type+")";
+
+    list.appendChild(div);
+
+  });
+
+});
+
+
+function addWork(){
+
+  const title=document.getElementById("title").value;
+  const type=document.getElementById("type").value;
+
+  worksRef.add({
+    title:title,
+    type:type,
+    time:new Date()
+  });
+
+  document.getElementById("title").value="";
+
+}
+
+</script>
+
+<!-- ================= FIREBASE END ================= -->
+
+
+</body>
+</html>
